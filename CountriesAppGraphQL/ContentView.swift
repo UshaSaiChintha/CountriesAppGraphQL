@@ -15,9 +15,13 @@ struct ContentView: View {
         NavigationView {
             VStack {
                 List(countries, id: \.code) { country in
-                    HStack {
-                        Text(country.emoji)
-                        Text(country.name)
+                    NavigationLink {
+                        CountryDetailsView(country: country)
+                    } label: {
+                        HStack {
+                            Text(country.emoji)
+                            Text(country.name)
+                        }
                     }
                 }.listStyle(PlainListStyle())
             }
