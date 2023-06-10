@@ -9,32 +9,24 @@ import SwiftUI
 
 struct CountryDetailsView: View {
     
-    let country: GetAllCountriesDetailsQuery.Data.Country
-    @State private var countryInfo: GetCountryInfoQuery.Data.Country?
+    let country: CountryViewModel
+    @StateObject private var countryDetailViewModel = CountryDetailViewModel()
     
     var body: some View {
         VStack{
-            Text(countryInfo?.name ?? "")
-            Text(countryInfo?.capital ?? "")
-            List(countryInfo?.states ?? [], id: \.name) { state in
+            Text(countryDetailViewModel.name)
+            Text(countryDetailViewModel.capital)
+            List(countryDetailViewModel.states, id: \.id) { state in
                 Text(state.name)
             }
         }.onAppear {
-            Network.shared.apollo.fetch(query: GetCountryInfoQuery(code: country.code)) { result in
-                switch result {
-                case .success(let graphQLResult):
-                    DispatchQueue.main.async {
-                        self.countryInfo = graphQLResult.data?.country
-                    }
-                case .failure(let error): print(error)
-                }
-            }
+            countryDetailViewModel.getCountryDetailsByCode(code: country.code)
         }
     }
 }
 
 struct CountryDetailsView_Previews: PreviewProvider {
     static var previews: some View {
-        CountryDetailsView(country: GetAllCountriesDetailsQuery.Data.Country(code: "US", name: "United States", emoji: ""))
+        CountryDetailsView(country: CountryViewModel.defaultCountry)
     }
 }
